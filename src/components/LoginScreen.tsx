@@ -22,18 +22,18 @@ export function LoginScreen() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="rounded-full bg-emerald-100 p-3">
-            <ShoppingBag className="h-12 w-12 text-emerald-600" />
+          <div className="rounded-full bg-sky-500 p-4 flex items-center justify-center">
+            <ShoppingBag className="h-12 w-12 text-white" fill="currentColor" />
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          BD Market এ আপনাকে স্বাগতম
+          Shathe তে আপনাকে স্বাগতম
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Sign in to start buying and selling 🇧🇩
+          আপনার প্রয়োজনীয় সব কিছু কিনুন ও বেচুন 🇧🇩
         </p>
       </div>
 
@@ -41,20 +41,18 @@ export function LoginScreen() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white px-4 py-8 shadow-sm sm:rounded-2xl sm:px-10 border border-emerald-100"
+          className="bg-white px-4 py-10 shadow-lg sm:rounded-lg sm:px-10 border border-gray-200"
         >
           <div className="space-y-6 flex flex-col items-center">
             
-            <p className="text-sm text-gray-700 text-center mb-2">
-              আপনার গুগল একাউন্ট দিয়ে প্রবেশ করুন:
-              <br />
-              (Sign in with your Google Account)
+            <p className="text-sm font-medium text-gray-800 text-center mb-2">
+              আপনার গুগল একাউন্ট দিয়ে লগ ইন করুন:
             </p>
 
             <button
               onClick={handleSignIn}
               disabled={isLoading}
-              className="flex w-full justify-center items-center gap-3 rounded-xl border border-gray-300 bg-white px-3 py-3 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-colors disabled:opacity-50"
+              className="flex w-full justify-center items-center gap-3 rounded bg-white border border-gray-300 px-4 py-3 text-sm font-bold text-gray-700 shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-colors disabled:opacity-50"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path
@@ -74,7 +72,7 @@ export function LoginScreen() {
                   fill="#EA4335"
                 />
               </svg>
-              {isLoading ? 'Signing in...' : 'Sign in with Google'}
+              {isLoading ? 'লগ ইন হচ্ছে...' : 'Google দিয়ে লগ ইন করুন'}
             </button>
 
             {errorMsg && (
