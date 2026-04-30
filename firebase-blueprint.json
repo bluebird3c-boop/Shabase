@@ -1,0 +1,24 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A product listed by a seller in the marketplace.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the product" },
+        "price": { "type": "number", "description": "Price in BDT" },
+        "description": { "type": "string", "description": "Description of the product" },
+        "imageUrl": { "type": "string", "description": "URL of the product image" },
+        "sellerId": { "type": "string", "description": "UID of the seller" },
+        "createdAt": { "type": "number", "description": "Timestamp when product was created" }
+      },
+      "required": ["title", "price", "description", "imageUrl", "sellerId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Products listed for sale."
+    }
+  }
+}

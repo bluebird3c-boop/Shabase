@@ -1,5 +1,10 @@
 export type Role = 'buyer' | 'seller';
 
+export interface User {
+  id: string;
+  name: string;
+}
+
 export interface Product {
   id: string;
   title: string;

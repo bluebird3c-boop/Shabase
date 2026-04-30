@@ -38,7 +38,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                   <ShoppingBag className="h-20 w-20 text-gray-200 mb-6" />
                   <p className="text-xl font-medium text-gray-900">Your cart is empty</p>
                   <p className="text-base mt-2">Looks like you haven't added anything yet.</p>
-                  <button onClick={onClose} className="mt-8 rounded-xl bg-indigo-50 px-6 py-3 text-sm font-semibold text-indigo-600 hover:bg-indigo-100 transition-colors">Start Shopping</button>
+                  <button onClick={onClose} className="mt-8 rounded-xl bg-emerald-50 px-6 py-3 text-sm font-semibold text-emerald-600 hover:bg-emerald-100 transition-colors">Start Shopping</button>
                 </div>
               ) : (
                 <ul className="divide-y divide-gray-200">
@@ -51,9 +51,9 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                         <div>
                           <div className="flex justify-between text-base font-medium text-gray-900">
                             <h3 className="line-clamp-2 pr-4">{item.product.title}</h3>
-                            <p className="whitespace-nowrap">${(item.product.price * item.quantity).toFixed(2)}</p>
+                            <p className="whitespace-nowrap font-bold text-emerald-600">৳{(item.product.price * item.quantity).toLocaleString('en-IN')}</p>
                           </div>
-                          <p className="mt-1 text-sm text-gray-500">${item.product.price.toFixed(2)} each</p>
+                          <p className="mt-1 text-sm text-gray-500">৳{item.product.price.toLocaleString('en-IN')} each</p>
                         </div>
                         <div className="flex flex-1 items-end justify-between text-sm mt-4">
                           <div className="flex items-center border border-gray-200 rounded-lg">
@@ -61,7 +61,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                             <span className="w-10 text-center font-medium text-gray-900">{item.quantity}</span>
                             <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="p-1.5 text-gray-500 hover:bg-gray-100 transition-colors rounded-r-lg"><Plus className="h-4 w-4" /></button>
                           </div>
-                          <button onClick={() => removeFromCart(item.product.id)} type="button" className="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                          <button onClick={() => removeFromCart(item.product.id)} type="button" className="font-medium text-emerald-600 hover:text-emerald-500">Remove</button>
                         </div>
                       </div>
                     </li>
@@ -74,7 +74,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
               <div className="border-t border-gray-200 px-6 py-6 bg-gray-50">
                 <div className="flex justify-between text-base font-semibold text-gray-900 mb-4">
                   <p>Subtotal</p>
-                  <p>${total.toFixed(2)}</p>
+                  <p className="text-emerald-700">৳{total.toLocaleString('en-IN')}</p>
                 </div>
                 <p className="text-sm text-gray-500 mb-6">Shipping and taxes calculated at checkout.</p>
                 <button
@@ -83,7 +83,7 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                     clearCart();
                     onClose();
                   }}
-                  className="flex w-full items-center justify-center rounded-2xl border border-transparent bg-indigo-600 px-6 py-4 text-base font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
+                  className="flex w-full items-center justify-center rounded-2xl border border-transparent bg-emerald-600 px-6 py-4 text-base font-medium text-white shadow-sm hover:bg-emerald-700 transition-colors"
                 >
                   Checkout
                 </button>

@@ -1,72 +1,100 @@
-import React, { createContext, useContext, useState } from 'react';
-import { Product, CartItem, Role } from './types';
-
-const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: 'p1',
-    title: 'Premium Wireless Headphones',
-    price: 299.99,
-    description: 'Over-ear noise-cancelling headphones with 30-hour battery life. Experience crystal clear sound with minimalist design.',
-    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800',
-    sellerId: 'vendor_1'
-  },
-  {
-    id: 'p2',
-    title: 'Mechanical Keyboard',
-    price: 149.50,
-    description: 'Tenkeyless layout with tactile switches and RGB backlighting. Perfect for typists and developers.',
-    imageUrl: 'https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&q=80&w=800',
-    sellerId: 'vendor_2'
-  },
-  {
-    id: 'p3',
-    title: 'Ceramic Coffee Mug',
-    price: 24.00,
-    description: 'Handcrafted ceramic mug, perfect for your morning brew. Each piece features a unique glaze pattern.',
-    imageUrl: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&q=80&w=800',
-    sellerId: 'vendor_1'
-  },
-  {
-    id: 'p4',
-    title: 'Minimalist Wristwatch',
-    price: 199.00,
-    description: 'Sleek, modern watch with a genuine leather strap. Water-resistant up to 50 meters.',
-    imageUrl: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=800',
-    sellerId: 'me' // Pre-populated "my" product
-  }
-];
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Product, CartItem, Role, User } from './types';
+import { auth, db, handleFirestoreError, OperationType } from './firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 
 interface StoreContextValue {
+  user: User | null;
+  logout: () => void;
   role: Role;
   setRole: (r: Role) => void;
   products: Product[];
-  addProduct: (p: Omit<Product, 'id' | 'sellerId'>) => void;
-  removeProduct: (id: string) => void;
+  addProduct: (p: Omit<Product, 'id' | 'sellerId'>) => Promise<void>;
+  removeProduct: (id: string) => Promise<void>;
   cart: CartItem[];
   addToCart: (p: Product) => void;
   removeFromCart: (id: string) => void;
   updateQuantity: (id: string, q: number) => void;
   clearCart: () => void;
+  isLoading: boolean;
 }
 
 const StoreContext = createContext<StoreContextValue | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [role, setRole] = useState<Role>('buyer');
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  const addProduct = (p: Omit<Product, 'id' | 'sellerId'>) => {
-    const newProduct: Product = {
-      ...p,
-      id: Math.random().toString(36).substring(2, 9),
-      sellerId: 'me', // Assuming the current logged-in seller is 'me'
-    };
-    setProducts([newProduct, ...products]);
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser({ id: firebaseUser.uid, name: firebaseUser.displayName || firebaseUser.email || 'User' });
+      } else {
+        setUser(null);
+      }
+      setIsLoadingAuth(false);
+    });
+
+    return () => unsubscribeAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setProducts([]);
+      return;
+    }
+
+    const q = query(collection(db, 'products'));
+    const unsubscribeProducts = onSnapshot(q, (snapshot) => {
+      const prods: Product[] = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        prods.push({
+          id: doc.id,
+          title: data.title,
+          price: data.price,
+          description: data.description,
+          imageUrl: data.imageUrl,
+          sellerId: data.sellerId,
+        });
+      });
+      setProducts(prods.reverse());
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'products');
+    });
+
+    return () => unsubscribeProducts();
+  }, [user]);
+
+  const logout = async () => {
+    await signOut(auth);
+    setCart([]);
   };
 
-  const removeProduct = (id: string) => {
-    setProducts(products.filter(p => p.id !== id));
+  const addProduct = async (p: Omit<Product, 'id' | 'sellerId'>) => {
+    if (!user) return;
+    try {
+      await addDoc(collection(db, 'products'), {
+        ...p,
+        sellerId: user.id,
+        createdAt: serverTimestamp()
+      });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'products');
+    }
+  };
+
+  const removeProduct = async (id: string) => {
+    if (!user) return;
+    try {
+      await deleteDoc(doc(db, 'products', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `products/${id}`);
+    }
   };
 
   const addToCart = (product: Product) => {
@@ -95,9 +123,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <StoreContext.Provider value={{
+      user, logout,
       role, setRole,
       products, addProduct, removeProduct,
-      cart, addToCart, removeFromCart, updateQuantity, clearCart
+      cart, addToCart, removeFromCart, updateQuantity, clearCart,
+      isLoading: isLoadingAuth
     }}>
       {children}
     </StoreContext.Provider>

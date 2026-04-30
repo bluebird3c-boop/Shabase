@@ -28,7 +28,7 @@ export function BuyerFlow() {
             <input
               type="text"
               placeholder="Search products..."
-              className="block w-full rounded-2xl border-0 py-3 pl-10 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              className="block w-full rounded-2xl border-0 py-3 pl-10 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -71,10 +71,10 @@ function ProductCard({ product, onAdd }: { key?: string | number, product: Produ
         <h3 className="text-base font-semibold text-gray-900 line-clamp-1">{product.title}</h3>
         <p className="text-sm text-gray-500 line-clamp-2 flex-1">{product.description}</p>
         <div className="flex items-center justify-between pt-4">
-          <p className="text-lg font-medium text-gray-900">${product.price.toFixed(2)}</p>
+          <p className="text-lg font-bold text-emerald-600">৳{product.price.toLocaleString('en-IN')}</p>
           <button
             onClick={onAdd}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 transition-colors hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 transition-colors hover:bg-emerald-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2"
             aria-label="Add to cart"
           >
             <Plus className="h-5 w-5" />

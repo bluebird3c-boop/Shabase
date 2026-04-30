@@ -5,8 +5,8 @@ import { useStore } from '../Store';
 import { Product } from '../types';
 
 export function SellerFlow() {
-  const { products, addProduct, removeProduct } = useStore();
-  const myProducts = products.filter(p => p.sellerId === 'me');
+  const { products, addProduct, removeProduct, user } = useStore();
+  const myProducts = products.filter(p => p.sellerId === (user ? user.id : 'me') || p.sellerId === 'me');
   const [isAdding, setIsAdding] = useState(false);
 
   return (
@@ -19,7 +19,7 @@ export function SellerFlow() {
           </div>
           <button
             onClick={() => setIsAdding(!isAdding)}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 transition-colors"
           >
             {isAdding ? 'Cancel' : <><Plus className="h-5 w-5" /> Add Product</>}
           </button>
@@ -46,7 +46,7 @@ export function SellerFlow() {
               <p className="text-sm mt-1">Add your first product to start selling!</p>
               <button
                 onClick={() => setIsAdding(true)}
-                className="mt-6 font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+                className="mt-6 font-medium text-emerald-600 hover:text-emerald-500 transition-colors"
               >
                 Add a product &rarr;
               </button>
@@ -60,7 +60,7 @@ export function SellerFlow() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-base font-semibold text-gray-900">{product.title}</p>
                       <p className="truncate text-sm text-gray-500 mt-1">{product.description}</p>
-                      <p className="text-sm font-medium text-gray-900 mt-2">${product.price.toFixed(2)}</p>
+                      <p className="text-sm font-bold text-emerald-600 mt-2">৳{product.price.toLocaleString('en-IN')}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -109,37 +109,37 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
         <div className="sm:col-span-2">
           <label htmlFor="title" className="block text-sm font-medium leading-6 text-gray-900">Product Title</label>
           <div className="mt-2">
-            <input required type="text" id="title" value={title} onChange={e => setTitle(e.target.value)} className="block w-full rounded-xl border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="e.g. Handmade Leather Wallet" />
+            <input required type="text" id="title" value={title} onChange={e => setTitle(e.target.value)} className="block w-full rounded-xl border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="e.g. Handmade Leather Wallet" />
           </div>
         </div>
 
         <div>
-          <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">Price ($)</label>
+          <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">Price (৳)</label>
           <div className="mt-2 relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-              <span className="text-gray-500 sm:text-sm">$</span>
+              <span className="text-gray-500 sm:text-sm">৳</span>
             </div>
-            <input required type="number" min="0" step="0.01" id="price" value={price} onChange={e => setPrice(e.target.value)} className="block w-full rounded-xl border-0 py-3 pl-8 pr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-white" placeholder="0.00" />
+            <input required type="number" min="0" step="1" id="price" value={price} onChange={e => setPrice(e.target.value)} className="block w-full rounded-xl border-0 py-3 pl-8 pr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 bg-white" placeholder="0" />
           </div>
         </div>
 
         <div>
           <label htmlFor="image" className="block text-sm font-medium leading-6 text-gray-900">Image URL</label>
           <div className="mt-2">
-            <input type="url" id="image" value={img} onChange={e => setImg(e.target.value)} className="block w-full rounded-xl border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="https://..." />
+            <input type="url" id="image" value={img} onChange={e => setImg(e.target.value)} className="block w-full rounded-xl border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="https://..." />
           </div>
         </div>
 
         <div className="sm:col-span-2">
           <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">Description</label>
           <div className="mt-2">
-            <textarea required id="description" rows={3} value={desc} onChange={e => setDesc(e.target.value)} className="block w-full rounded-xl border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="Describe the item..." />
+            <textarea required id="description" rows={3} value={desc} onChange={e => setDesc(e.target.value)} className="block w-full rounded-xl border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="Describe the item..." />
           </div>
         </div>
       </div>
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 mt-6">
         <button type="button" onClick={onClose} className="rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-colors">Cancel</button>
-        <button type="submit" className="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save Product</button>
+        <button type="submit" className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Save Product</button>
       </div>
     </form>
   );
