@@ -28,7 +28,7 @@ service cloud.firestore {
              data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
              data.price is number && data.price >= 0 &&
              data.description is string && data.description.size() <= 2000 &&
-             data.imageUrl is string && data.imageUrl.size() <= 1000 &&
+             data.imageUrl is string && data.imageUrl.size() <= 1500000 &&
              data.sellerId == request.auth.uid &&
              data.createdAt == request.time;
     }
@@ -37,8 +37,23 @@ service cloud.firestore {
       return data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
              data.price is number && data.price >= 0 &&
              data.description is string && data.description.size() <= 2000 &&
-             data.imageUrl is string && data.imageUrl.size() <= 1000 &&
+             data.imageUrl is string && data.imageUrl.size() <= 1500000 &&
              data.sellerId == existing().sellerId; // Must not change sellerId
+    }
+
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /orders/{orderId} {
+      allow read: if isSignedIn() && (existing().buyerId == request.auth.uid || existing().sellerId == request.auth.uid);
+      allow create: if isSignedIn() && incoming().buyerId == request.auth.uid;
+      allow update: if isSignedIn(); // Relaxed for the prototype
+    }
+
+    match /transactions/{txId} {
+      allow read: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
     }
 
     match /products/{productId} {

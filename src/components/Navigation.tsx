@@ -42,7 +42,7 @@ export function Navigation({ onCartClick }: { onCartClick: () => void }) {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setTab('sell')}
-            className="flex items-center gap-2 rounded bg-amber-400 px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-bold text-sky-900 shadow-sm hover:bg-amber-500 transition-colors"
+            className="flex items-center gap-2 rounded bg-white px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-bold text-sky-600 shadow-sm hover:bg-gray-50 transition-colors"
           >
             <PlusCircle className="h-5 w-5" />
             <span className="hidden sm:inline">বিজ্ঞাপন দিন</span>

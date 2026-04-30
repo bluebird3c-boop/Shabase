@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem, Tab, User } from './types';
+import { Product, CartItem, Tab, User, Order, Transaction } from './types';
 import { auth, db, handleFirestoreError, OperationType } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, query, orderBy, getDoc, setDoc, where } from 'firebase/firestore';
 
 interface StoreContextValue {
   user: User | null;
@@ -18,6 +18,12 @@ interface StoreContextValue {
   updateQuantity: (id: string, q: number) => void;
   clearCart: () => void;
   isLoading: boolean;
+  orders: Order[];
+  transactions: Transaction[];
+  addMoney: (amount: number) => Promise<void>;
+  checkoutCart: () => Promise<boolean>;
+  releasePaymentBuyer: (order: Order) => Promise<void>;
+  refundOrderSeller: (order: Order) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextValue | undefined>(undefined);
@@ -28,11 +34,20 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [tab, setTab] = useState<Tab>('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        setUser({ id: firebaseUser.uid, name: firebaseUser.displayName || firebaseUser.email || 'User' });
+        const userDocRef = doc(db, 'users', firebaseUser.uid);
+        const userSnap = await getDoc(userDocRef);
+        if (!userSnap.exists()) {
+          await setDoc(userDocRef, { name: firebaseUser.displayName || 'User', walletBalance: 0 });
+          setUser({ id: firebaseUser.uid, name: firebaseUser.displayName || 'User', walletBalance: 0 });
+        } else {
+          setUser({ id: firebaseUser.uid, ...userSnap.data() } as User);
+        }
       } else {
         setUser(null);
       }
@@ -43,8 +58,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
+    const userDocRef = doc(db, 'users', user.id);
+    const unsub = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+         setUser(prev => prev ? { ...prev, walletBalance: docSnap.data().walletBalance || 0 } : null);
+      }
+    });
+    return () => unsub();
+  }, [user?.id]);
+
+  useEffect(() => {
     if (!user) {
       setProducts([]);
+      setOrders([]);
+      setTransactions([]);
       return;
     }
 
@@ -63,12 +91,33 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         });
       });
       setProducts(prods.reverse());
-    }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'products');
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'products'));
+
+    const oq = query(collection(db, 'orders')); // Client side filter for simplicity
+    const unsubscribeOrders = onSnapshot(oq, (snapshot) => {
+       const ords: Order[] = [];
+       snapshot.forEach(d => {
+         const data = d.data();
+         if (data.buyerId === user.id || data.sellerId === user.id) {
+           ords.push({ id: d.id, ...data } as Order);
+         }
+       });
+       setOrders(ords.sort((a,b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)));
     });
 
-    return () => unsubscribeProducts();
-  }, [user]);
+    const tq = query(collection(db, 'transactions'), where('userId', '==', user.id));
+    const unsubscribeTx = onSnapshot(tq, (snapshot) => {
+       const txs: Transaction[] = [];
+       snapshot.forEach(d => txs.push({ id: d.id, ...d.data() } as Transaction));
+       setTransactions(txs.sort((a,b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)));
+    });
+
+    return () => {
+      unsubscribeProducts();
+      unsubscribeOrders();
+      unsubscribeTx();
+    };
+  }, [user?.id]);
 
   const logout = async () => {
     await signOut(auth);
@@ -121,10 +170,96 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => setCart([]);
 
+  const addMoney = async (amount: number) => {
+    if (!user) return;
+    const newBalance = user.walletBalance + amount;
+    await updateDoc(doc(db, 'users', user.id), { walletBalance: newBalance });
+    await addDoc(collection(db, 'transactions'), {
+      userId: user.id,
+      amount,
+      type: 'deposit',
+      description: 'অ্যাড মানি (Deposit)',
+      createdAt: serverTimestamp()
+    });
+  };
+
+  const checkoutCart = async () => {
+    if (!user) return false;
+    const total = cart.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
+    if (user.walletBalance < total) {
+      alert("আপনার ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই! দয়া করে রিচার্জ করুন। (Insufficient balance)");
+      return false;
+    }
+    
+    // Deduct
+    await updateDoc(doc(db, 'users', user.id), { walletBalance: user.walletBalance - total });
+    
+    // Create orders
+    for (const item of cart) {
+      const orderAmount = item.product.price * item.quantity;
+      await addDoc(collection(db, 'orders'), {
+        productId: item.product.id,
+        productTitle: item.product.title,
+        buyerId: user.id,
+        sellerId: item.product.sellerId,
+        amount: orderAmount,
+        status: 'pending',
+        createdAt: serverTimestamp()
+      });
+      await addDoc(collection(db, 'transactions'), {
+        userId: user.id,
+        amount: -orderAmount,
+        type: 'purchase',
+        description: `কেনাকাটা: ${item.product.title}`,
+        createdAt: serverTimestamp()
+      });
+    }
+    
+    setCart([]);
+    return true;
+  };
+
+  const releasePaymentBuyer = async (order: Order) => {
+    if (!user) return;
+    await updateDoc(doc(db, 'orders', order.id), { status: 'completed' });
+    
+    const sellerSnap = await getDoc(doc(db, 'users', order.sellerId));
+    if (sellerSnap.exists()) {
+      const fee = order.amount * 0.02; // 2% platform fee
+      const sellerGets = order.amount - fee;
+      await updateDoc(doc(db, 'users', order.sellerId), { walletBalance: (sellerSnap.data().walletBalance || 0) + sellerGets });
+      await addDoc(collection(db, 'transactions'), {
+        userId: order.sellerId,
+        amount: sellerGets,
+        type: 'sale',
+        description: `পণ্য বিক্রয় (Platform fee deducted: ৳${fee.toFixed(2)}): ${order.productTitle}`,
+        createdAt: serverTimestamp()
+      });
+    }
+  };
+
+  const refundOrderSeller = async (order: Order) => {
+    if (!user) return;
+    await updateDoc(doc(db, 'orders', order.id), { status: 'cancelled' });
+    
+    const buyerSnap = await getDoc(doc(db, 'users', order.buyerId));
+    if (buyerSnap.exists()) {
+      await updateDoc(doc(db, 'users', order.buyerId), { walletBalance: (buyerSnap.data().walletBalance || 0) + order.amount });
+      await addDoc(collection(db, 'transactions'), {
+        userId: order.buyerId,
+        amount: order.amount,
+        type: 'refund',
+        description: `রিফান্ড (অর্ডার বাতিল): ${order.productTitle}`,
+        createdAt: serverTimestamp()
+      });
+    }
+  };
+
   return (
     <StoreContext.Provider value={{
       user, logout,
       tab, setTab,
+      orders, transactions, addMoney, checkoutCart, releasePaymentBuyer, refundOrderSeller,
       products, addProduct, removeProduct,
       cart, addToCart, removeFromCart, updateQuantity, clearCart,
       isLoading: isLoadingAuth

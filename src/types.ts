@@ -3,6 +3,27 @@ export type Tab = 'home' | 'buy' | 'sell' | 'wallet' | 'profile' | 'about';
 export interface User {
   id: string;
   name: string;
+  walletBalance: number;
+}
+
+export interface Order {
+  id: string;
+  productId: string;
+  productTitle: string;
+  buyerId: string;
+  sellerId: string;
+  amount: number;
+  status: 'pending' | 'completed' | 'cancelled';
+  createdAt: any;
+}
+
+export interface Transaction {
+  id: string;
+  userId: string;
+  amount: number;
+  type: 'deposit' | 'withdrawal' | 'purchase' | 'sale' | 'refund';
+  description: string;
+  createdAt: any;
 }
 
 export interface Product {

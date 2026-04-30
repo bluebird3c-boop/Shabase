@@ -42,7 +42,7 @@ export function BuyerFlow() {
             <p className="text-sm">অন্য কিছু লিখে চেষ্টা করুন।</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-8">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAdd={() => addToCart(product)} />
             ))}
