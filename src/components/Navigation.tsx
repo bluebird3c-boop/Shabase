@@ -3,7 +3,7 @@ import { ShoppingBag, PlusCircle, User, ShoppingCart, LogOut, Menu, X } from 'lu
 import { useStore } from '../Store';
 
 export function Navigation({ onCartClick }: { onCartClick: () => void }) {
-  const { tab, setTab, cart, user, logout } = useStore();
+  const { tab, setTab, cart, user, logout, setShowLoginModal } = useStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const cartItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -33,15 +33,15 @@ export function Navigation({ onCartClick }: { onCartClick: () => void }) {
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium ml-8 flex-1">
           <button onClick={() => setTab('home')} className={`transition-colors border-b-2 py-5 ${tab === 'home' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Home</button>
           <button onClick={() => setTab('buy')} className={`transition-colors border-b-2 py-5 ${tab === 'buy' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Buy</button>
-          <button onClick={() => setTab('sell')} className={`transition-colors border-b-2 py-5 ${tab === 'sell' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Sell</button>
-          <button onClick={() => setTab('wallet')} className={`transition-colors border-b-2 py-5 ${tab === 'wallet' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Wallet</button>
-          <button onClick={() => setTab('profile')} className={`transition-colors border-b-2 py-5 ${tab === 'profile' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Profile</button>
+          <button onClick={() => !user ? setShowLoginModal(true) : setTab('sell')} className={`transition-colors border-b-2 py-5 ${tab === 'sell' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Sell</button>
+          <button onClick={() => !user ? setShowLoginModal(true) : setTab('wallet')} className={`transition-colors border-b-2 py-5 ${tab === 'wallet' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Wallet</button>
+          <button onClick={() => !user ? setShowLoginModal(true) : setTab('profile')} className={`transition-colors border-b-2 py-5 ${tab === 'profile' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Profile</button>
           <button onClick={() => setTab('about')} className={`transition-colors border-b-2 py-5 ${tab === 'about' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>About</button>
         </nav>
 
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setTab('sell')}
+            onClick={() => !user ? setShowLoginModal(true) : setTab('sell')}
             className="flex items-center gap-2 rounded bg-white px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-bold text-sky-600 shadow-sm hover:bg-gray-50 transition-colors"
           >
             <PlusCircle className="h-5 w-5" />
@@ -96,7 +96,11 @@ export function Navigation({ onCartClick }: { onCartClick: () => void }) {
               <button
                 key={item.id}
                 onClick={() => {
-                  setTab(item.id as any);
+                  if (!user && (item.id === 'sell' || item.id === 'wallet' || item.id === 'profile')) {
+                    setShowLoginModal(true);
+                  } else {
+                    setTab(item.id as any);
+                  }
                   setIsMobileMenuOpen(false);
                 }}
                 className={`flex w-full items-center rounded-md px-3 py-2.5 text-base font-medium transition-colors ${

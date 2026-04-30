@@ -25,13 +25,15 @@ interface StoreContextValue {
   releasePaymentBuyer: (order: Order) => Promise<void>;
   refundOrderSeller: (order: Order) => Promise<void>;
   submitReview: (productId: string, rating: number, comment: string) => Promise<void>;
+  showLoginModal: boolean;
+  setShowLoginModal: (v: boolean) => void;
 }
 
 const StoreContext = createContext<StoreContextValue | undefined>(undefined);
-
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [tab, setTab] = useState<Tab>('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -290,6 +292,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   return (
     <StoreContext.Provider value={{
       user, logout,
+      showLoginModal, setShowLoginModal,
       tab, setTab,
       orders, transactions, addMoney, checkoutCart, releasePaymentBuyer, refundOrderSeller, submitReview,
       products, addProduct, removeProduct,

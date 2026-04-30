@@ -3,7 +3,7 @@ import { useStore } from '../Store';
 import { motion, AnimatePresence } from 'motion/react';
 
 export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { cart, removeFromCart, updateQuantity, checkoutCart } = useStore();
+  const { cart, removeFromCart, updateQuantity, checkoutCart, user, setShowLoginModal } = useStore();
 
   const total = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
@@ -85,6 +85,10 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 <p className="text-sm text-gray-500 mb-6">শিপিং চার্জ প্রযোজ্য হতে পারে।</p>
                 <button
                   onClick={async () => {
+                    if (!user) {
+                      setShowLoginModal(true);
+                      return;
+                    }
                     const success = await checkoutCart();
                     if (success) {
                       alert('ধন্যবাদ! আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে। (Order placed)');

@@ -9,11 +9,13 @@ import { WalletFlow } from './components/WalletFlow';
 import { ProfileFlow } from './components/ProfileFlow';
 import { AboutFlow } from './components/AboutFlow';
 import { CartDrawer } from './components/CartDrawer';
-import { LoginScreen } from './components/LoginScreen';
+import { LoginScreen as LoginModal } from './components/LoginScreen';
+import { OnboardingFlow } from './components/OnboardingFlow';
 
 function MarketplaceApp() {
-  const { tab, user, isLoading } = useStore();
+  const { tab, isLoading, showLoginModal, user } = useStore();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('hasSeenOnboarding'));
 
   if (isLoading) {
     return (
@@ -23,8 +25,11 @@ function MarketplaceApp() {
     );
   }
 
-  if (!user) {
-    return <LoginScreen />;
+  if (showOnboarding) {
+    return <OnboardingFlow onComplete={() => {
+      localStorage.setItem('hasSeenOnboarding', 'true');
+      setShowOnboarding(false);
+    }} />;
   }
 
   return (
@@ -33,12 +38,13 @@ function MarketplaceApp() {
       <main>
         {tab === 'home' && <HomeFlow />}
         {tab === 'buy' && <BuyerFlow />}
-        {tab === 'sell' && <SellerFlow />}
-        {tab === 'wallet' && <WalletFlow />}
-        {tab === 'profile' && <ProfileFlow />}
+        {tab === 'sell' && user && <SellerFlow />}
+        {tab === 'wallet' && user && <WalletFlow />}
+        {tab === 'profile' && user && <ProfileFlow />}
         {tab === 'about' && <AboutFlow />}
       </main>
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {showLoginModal && <LoginModal />}
     </div>
   );
 }

@@ -14,7 +14,7 @@ export function BuyerFlow() {
 
   const filtered = products.filter(p => {
     const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) || p.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === 'All' || p.category === filterCategory;
+    const matchesCategory = filterCategory === 'All' || p.category === filterCategory || (!p.category && filterCategory === 'Others');
     return matchesSearch && matchesCategory;
   });
 
@@ -131,6 +131,7 @@ function ProductCard({ product, onAdd, onClick }: { key?: string | number, produ
 }
 
 function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { product: Product, onClose: () => void, onAdd: () => void, onSubmitReview: (r: number, c: string) => Promise<void> }) {
+  const { user, setShowLoginModal } = useStore();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
@@ -146,6 +147,10 @@ function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { prod
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
     if (!comment.trim()) return;
     setIsSubmitting(true);
     await onSubmitReview(rating, comment);
