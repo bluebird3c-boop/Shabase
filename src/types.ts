@@ -26,6 +26,16 @@ export interface Transaction {
   createdAt: any;
 }
 
+export interface Review {
+  id: string;
+  productId: string;
+  userId: string;
+  userName: string;
+  rating: number; // 1 to 5
+  comment: string;
+  createdAt: any;
+}
+
 export interface Product {
   id: string;
   title: string;
@@ -33,6 +43,9 @@ export interface Product {
   description: string;
   imageUrl: string;
   sellerId: string;
+  category?: string;
+  ratingCount?: number;
+  averageRating?: number;
 }
 
 export interface CartItem {

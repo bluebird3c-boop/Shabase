@@ -24,6 +24,7 @@ interface StoreContextValue {
   checkoutCart: () => Promise<boolean>;
   releasePaymentBuyer: (order: Order) => Promise<void>;
   refundOrderSeller: (order: Order) => Promise<void>;
+  submitReview: (productId: string, rating: number, comment: string) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextValue | undefined>(undefined);
@@ -255,11 +256,42 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const submitReview = async (productId: string, rating: number, comment: string) => {
+    if (!user) return;
+    
+    // Add review
+    await addDoc(collection(db, 'reviews'), {
+      productId,
+      userId: user.id,
+      userName: user.name,
+      rating,
+      comment,
+      createdAt: serverTimestamp()
+    });
+
+    // Update product stats
+    const productRef = doc(db, 'products', productId);
+    const prodSnap = await getDoc(productRef);
+    if (prodSnap.exists()) {
+      const pData = prodSnap.data();
+      const currentCount = pData.ratingCount || 0;
+      const currentAvg = pData.averageRating || 0;
+      
+      const newCount = currentCount + 1;
+      const newAvg = ((currentAvg * currentCount) + rating) / newCount;
+      
+      await updateDoc(productRef, {
+        ratingCount: newCount,
+        averageRating: newAvg
+      });
+    }
+  };
+
   return (
     <StoreContext.Provider value={{
       user, logout,
       tab, setTab,
-      orders, transactions, addMoney, checkoutCart, releasePaymentBuyer, refundOrderSeller,
+      orders, transactions, addMoney, checkoutCart, releasePaymentBuyer, refundOrderSeller, submitReview,
       products, addProduct, removeProduct,
       cart, addToCart, removeFromCart, updateQuantity, clearCart,
       isLoading: isLoadingAuth

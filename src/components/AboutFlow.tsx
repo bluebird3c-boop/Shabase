@@ -10,14 +10,14 @@ export function AboutFlow() {
         </p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 mb-16">
+      <div className="grid gap-8 md:grid-cols-3 mb-16">
         <div className="rounded border border-gray-200 bg-white p-8 shadow-sm">
           <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-sky-100 text-sky-600">
             <Users className="h-6 w-6" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">আমাদের লক্ষ্য</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">সহজ বেচাকেনা</h3>
           <p className="text-gray-600">
-            সবাইকে এক সাথে সংযুক্ত করা এবং সহজে বেচাকেনা করার একটি বিশ্বস্ত প্ল্যাটফর্ম প্রদান করা। আমাদের লক্ষ্য হল প্রযুক্তি ব্যবহার করে মানুষের দৈনন্দিন জীবন সহজ করা।
+            খুব সহজে কয়েক ক্লিকেই আপনার পণ্যটি বিক্রির জন্য বিজ্ঞাপন দিন অথবা পছন্দের পণ্য কিনুন।
           </p>
         </div>
         <div className="rounded border border-gray-200 bg-white p-8 shadow-sm">
@@ -26,7 +26,16 @@ export function AboutFlow() {
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">সুরক্ষিত লেনদেন</h3>
           <p className="text-gray-600">
-            আমরা নিশ্চিত করি যে আপনার প্রতিটি লেনদেন সুরক্ষিত এবং গোপনীয়। আমাদের অ্যাডভান্সড সিকিউরিটি সিস্টেম আপনার ডেটা এবং পেমেন্ট সবসময় সুরক্ষিত রাখে।
+            আমাদের প্ল্যাটফর্মে আপনি ১০০% নিরাপদ পরিবেশে লেনদেন করতে পারবেন।
+          </p>
+        </div>
+        <div className="rounded border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600">
+            <Shield className="h-6 w-6" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">দ্রুত বিক্রি</h3>
+          <p className="text-gray-600">
+            সঠিক ক্রেতার কাছে পৌঁছে যান দ্রুত এবং বিক্রি করুন আপনার পণ্য।
           </p>
         </div>
       </div>

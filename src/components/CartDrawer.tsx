@@ -1,4 +1,4 @@
-import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Star } from 'lucide-react';
 import { useStore } from '../Store';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -52,6 +52,12 @@ export function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                           <div className="flex justify-between text-base font-medium text-gray-900">
                             <h3 className="line-clamp-2 pr-4">{item.product.title}</h3>
                             <p className="whitespace-nowrap font-bold text-gray-900">৳ {(item.product.price * item.quantity).toLocaleString('en-IN')}</p>
+                          </div>
+                          <div className="flex items-center gap-1 mt-1">
+                            <Star className={`h-3 w-3 ${item.product.averageRating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
+                            <span className="text-[10px] uppercase font-bold text-gray-500">
+                              {item.product.averageRating ? item.product.averageRating.toFixed(1) : 'NEW'}
+                            </span>
                           </div>
                           <p className="mt-1 text-sm text-gray-500">৳ {item.product.price.toLocaleString('en-IN')} (প্রতিটি)</p>
                         </div>

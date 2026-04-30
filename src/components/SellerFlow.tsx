@@ -59,7 +59,10 @@ export function SellerFlow() {
                     <img src={product.imageUrl} alt={product.title} className="h-20 w-20 rounded object-cover bg-gray-100 flex-shrink-0 border border-gray-200" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-base font-semibold text-gray-900">{product.title}</p>
-                      <p className="truncate text-sm text-gray-500 mt-1">{product.description}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        {product.category && <span className="inline-flex items-center rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800">{product.category}</span>}
+                        <p className="truncate text-sm text-gray-500">{product.description}</p>
+                      </div>
                       <p className="text-sm font-bold text-sky-600 mt-2">৳ {product.price.toLocaleString('en-IN')}</p>
                     </div>
                   </div>
@@ -87,6 +90,7 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
   const [price, setPrice] = useState('');
   const [desc, setDesc] = useState('');
   const [img, setImg] = useState('');
+  const [category, setCategory] = useState('Others');
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -94,12 +98,14 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
       title,
       price: parseFloat(price) || 0,
       description: desc,
-      imageUrl: img || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800'
+      imageUrl: img || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800',
+      category
     });
     setTitle('');
     setPrice('');
     setDesc('');
     setImg('');
+    setCategory('Others');
     onClose();
   };
 
@@ -120,6 +126,20 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
               <span className="text-gray-500 sm:text-sm">৳</span>
             </div>
             <input required type="number" min="0" step="1" id="price" value={price} onChange={e => setPrice(e.target.value)} className="block w-full rounded border-0 py-3 pl-8 pr-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white" placeholder="0" />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="category" className="block text-sm font-medium leading-6 text-gray-900">ক্যাটাগরি</label>
+          <div className="mt-2 text-gray-900">
+            <select id="category" value={category} onChange={e => setCategory(e.target.value)} className="block w-full rounded border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white">
+              <option value="Others">অন্যান্য (Others)</option>
+              <option value="Electronics">ইলেকট্রনিক্স (Electronics)</option>
+              <option value="Fashion">ফ্যাশন (Fashion)</option>
+              <option value="Home">হোম ও লিভিং (Home)</option>
+              <option value="Vehicles">গাড়ি (Vehicles)</option>
+              <option value="Properties">প্রপার্টি (Properties)</option>
+            </select>
           </div>
         </div>
 
