@@ -1,6 +1,8 @@
-import { Wallet, CreditCard, ArrowUpRight, ArrowDownRight, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { Wallet, CreditCard, ArrowUpRight, ArrowDownRight, Clock, Upload } from 'lucide-react';
 
 export function WalletFlow() {
+  const [receiptImg, setReceiptImg] = useState<string>('');
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 md:py-16">
       <div className="mb-8 text-center sm:text-left">
@@ -42,6 +44,22 @@ export function WalletFlow() {
              <span className="text-sm font-medium text-gray-700">**** **** **** 4242</span>
            </div>
         </div>
+      </div>
+
+      <div className="rounded border border-gray-200 bg-white p-6 shadow-sm mb-8">
+         <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+           <Upload className="h-5 w-5 text-sky-500" /> পেমেন্ট রসিদ আপলোড (Upload Receipt)
+         </h3>
+         <p className="text-sm text-gray-500 mb-4">অ্যাড মানি বা উইথড্র এর ডকুমেন্ট প্রমাণস্বরূপ আপলোড করুন।</p>
+         <input type="file" accept="image/*" onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+               const reader = new FileReader();
+               reader.onloadend = () => setReceiptImg(reader.result as string);
+               reader.readAsDataURL(file);
+            }
+         }} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-600 hover:file:bg-sky-100 cursor-pointer" />
+         {receiptImg && <img src={receiptImg} alt="Receipt Preview" className="mt-4 h-32 w-auto object-contain rounded border border-gray-200" />}
       </div>
 
       <h3 className="text-lg font-bold text-gray-900 mb-4">সাম্প্রতিক লেনদেন</h3>

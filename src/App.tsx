@@ -6,6 +6,7 @@ import { HomeFlow } from './components/HomeFlow';
 import { BuyerFlow } from './components/BuyerFlow';
 import { SellerFlow } from './components/SellerFlow';
 import { WalletFlow } from './components/WalletFlow';
+import { ProfileFlow } from './components/ProfileFlow';
 import { AboutFlow } from './components/AboutFlow';
 import { CartDrawer } from './components/CartDrawer';
 import { LoginScreen } from './components/LoginScreen';
@@ -34,6 +35,7 @@ function MarketplaceApp() {
         {tab === 'buy' && <BuyerFlow />}
         {tab === 'sell' && <SellerFlow />}
         {tab === 'wallet' && <WalletFlow />}
+        {tab === 'profile' && <ProfileFlow />}
         {tab === 'about' && <AboutFlow />}
       </main>
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

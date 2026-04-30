@@ -1,4 +1,4 @@
-export type Tab = 'home' | 'buy' | 'sell' | 'wallet' | 'about';
+export type Tab = 'home' | 'buy' | 'sell' | 'wallet' | 'profile' | 'about';
 
 export interface User {
   id: string;

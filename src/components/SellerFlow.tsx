@@ -124,8 +124,24 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
         </div>
 
         <div>
-          <label htmlFor="image" className="block text-sm font-medium leading-6 text-gray-900">ছবির URL</label>
-          <div className="mt-2">
+          <label className="block text-sm font-medium leading-6 text-gray-900">পণ্যের ছবি (Image)</label>
+          <div className="mt-2 space-y-3">
+            <div className="flex items-center gap-4">
+              {img && <img src={img} alt="Preview" className="h-16 w-16 object-cover rounded border border-gray-300 bg-gray-50" />}
+              <input type="file" accept="image/*" onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  if (file.size > 800000) {
+                    alert('ছবি অনেক বড়! দয়া করে ছোট ছবি আপলোড করুন (< 800KB)। (File too large)');
+                    return;
+                  }
+                  const reader = new FileReader();
+                  reader.onloadend = () => setImg(reader.result as string);
+                  reader.readAsDataURL(file);
+                }
+              }} className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-600 hover:file:bg-sky-100 cursor-pointer focus:outline-none" />
+            </div>
+            <p className="text-xs text-gray-500">অথবা ছবির URL দিন:</p>
             <input type="url" id="image" value={img} onChange={e => setImg(e.target.value)} className="block w-full rounded border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="https://..." />
           </div>
         </div>
