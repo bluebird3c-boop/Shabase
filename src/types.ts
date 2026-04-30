@@ -1,4 +1,4 @@
-export type Role = 'buyer' | 'seller';
+export type Tab = 'home' | 'buy' | 'sell' | 'wallet' | 'about';
 
 export interface User {
   id: string;

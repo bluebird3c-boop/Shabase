@@ -2,7 +2,7 @@ import { ShoppingBag, PlusCircle, User, ShoppingCart, LogOut } from 'lucide-reac
 import { useStore } from '../Store';
 
 export function Navigation({ onCartClick }: { onCartClick: () => void }) {
-  const { role, setRole, cart, user, logout } = useStore();
+  const { tab, setTab, cart, user, logout } = useStore();
 
   const cartItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -11,7 +11,7 @@ export function Navigation({ onCartClick }: { onCartClick: () => void }) {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div 
           className="flex items-center gap-2 font-bold text-2xl tracking-tight cursor-pointer"
-          onClick={() => setRole('buyer')}
+          onClick={() => setTab('home')}
         >
           <div className="bg-white rounded-full p-1.5 flex items-center justify-center">
             <ShoppingBag className="h-6 w-6 text-sky-500" fill="currentColor" />
@@ -19,9 +19,17 @@ export function Navigation({ onCartClick }: { onCartClick: () => void }) {
           <span>Shathe</span>
         </div>
 
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium ml-8 flex-1">
+          <button onClick={() => setTab('home')} className={`transition-colors border-b-2 py-5 ${tab === 'home' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Home</button>
+          <button onClick={() => setTab('buy')} className={`transition-colors border-b-2 py-5 ${tab === 'buy' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Buy</button>
+          <button onClick={() => setTab('sell')} className={`transition-colors border-b-2 py-5 ${tab === 'sell' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Sell</button>
+          <button onClick={() => setTab('wallet')} className={`transition-colors border-b-2 py-5 ${tab === 'wallet' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>Wallet</button>
+          <button onClick={() => setTab('about')} className={`transition-colors border-b-2 py-5 ${tab === 'about' ? 'border-white text-white font-bold' : 'border-transparent text-sky-100 hover:text-white'}`}>About</button>
+        </nav>
+
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setRole('seller')}
+            onClick={() => setTab('sell')}
             className="flex items-center gap-2 rounded bg-amber-400 px-4 py-2 text-sm font-bold text-sky-900 shadow-sm hover:bg-amber-500 transition-colors"
           >
             <PlusCircle className="h-5 w-5" />
@@ -29,7 +37,7 @@ export function Navigation({ onCartClick }: { onCartClick: () => void }) {
             <span className="sm:hidden">POST</span>
           </button>
 
-          {role === 'buyer' && (
+          {tab === 'buy' && (
             <button
               onClick={onCartClick}
               className="relative p-2 text-white hover:text-gray-200 transition-colors"

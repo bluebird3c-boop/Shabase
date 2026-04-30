@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { StoreProvider, useStore } from './Store';
 import { Navigation } from './components/Navigation';
+import { HomeFlow } from './components/HomeFlow';
 import { BuyerFlow } from './components/BuyerFlow';
 import { SellerFlow } from './components/SellerFlow';
+import { WalletFlow } from './components/WalletFlow';
+import { AboutFlow } from './components/AboutFlow';
 import { CartDrawer } from './components/CartDrawer';
 import { LoginScreen } from './components/LoginScreen';
 
 function MarketplaceApp() {
-  const { role, user, isLoading } = useStore();
+  const { tab, user, isLoading } = useStore();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   if (isLoading) {
@@ -27,7 +30,11 @@ function MarketplaceApp() {
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       <Navigation onCartClick={() => setIsCartOpen(true)} />
       <main>
-        {role === 'buyer' ? <BuyerFlow /> : <SellerFlow />}
+        {tab === 'home' && <HomeFlow />}
+        {tab === 'buy' && <BuyerFlow />}
+        {tab === 'sell' && <SellerFlow />}
+        {tab === 'wallet' && <WalletFlow />}
+        {tab === 'about' && <AboutFlow />}
       </main>
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>

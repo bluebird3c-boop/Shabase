@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem, Role, User } from './types';
+import { Product, CartItem, Tab, User } from './types';
 import { auth, db, handleFirestoreError, OperationType } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from 'firebase/firestore';
@@ -7,8 +7,8 @@ import { collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, query,
 interface StoreContextValue {
   user: User | null;
   logout: () => void;
-  role: Role;
-  setRole: (r: Role) => void;
+  tab: Tab;
+  setTab: (t: Tab) => void;
   products: Product[];
   addProduct: (p: Omit<Product, 'id' | 'sellerId'>) => Promise<void>;
   removeProduct: (id: string) => Promise<void>;
@@ -25,7 +25,7 @@ const StoreContext = createContext<StoreContextValue | undefined>(undefined);
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-  const [role, setRole] = useState<Role>('buyer');
+  const [tab, setTab] = useState<Tab>('home');
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
 
@@ -124,7 +124,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   return (
     <StoreContext.Provider value={{
       user, logout,
-      role, setRole,
+      tab, setTab,
       products, addProduct, removeProduct,
       cart, addToCart, removeFromCart, updateQuantity, clearCart,
       isLoading: isLoadingAuth
