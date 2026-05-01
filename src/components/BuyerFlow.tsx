@@ -21,16 +21,16 @@ export function BuyerFlow() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">সকল বিজ্ঞাপন</h1>
             <p className="text-gray-500 mt-1">আপনার প্রয়োজনীয় সব কিছু খুঁজুন</p>
           </div>
-          <div className="flex flex-1 items-center gap-3 md:justify-end">
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="block rounded border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white"
+              className="block w-full sm:w-auto rounded border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white"
             >
               <option value="All">সব ক্যাটাগরি (All)</option>
               <option value="Electronics">ইলেকট্রনিক্স</option>
@@ -40,7 +40,7 @@ export function BuyerFlow() {
               <option value="Properties">প্রপার্টি</option>
               <option value="Others">অন্যান্য</option>
             </select>
-            <div className="relative flex-1 max-w-sm">
+            <div className="relative flex-1 w-full">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
