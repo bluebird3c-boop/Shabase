@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, Plus, Star, X, MapPin, Phone, AlertTriangle } from 'lucide-react';
 import { useStore } from '../Store';
 import { Product, Review } from '../types';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy, getDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export function BuyerFlow() {
@@ -145,6 +145,42 @@ function ProductCard({ product, onAdd, onClick }: { key?: string | number, produ
 
 function ProductDetailsModal({ product, onClose, onAdd }: { product: Product, onClose: () => void, onAdd: () => void }) {
   const { user, setShowLoginModal } = useStore();
+  const [sellerInfo, setSellerInfo] = useState<{name: string, phone: string, location: string} | null>(null);
+
+  useEffect(() => {
+    if (!product.sellerId) return;
+    const fetchSeller = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'users', product.sellerId));
+        if (snap.exists()) {
+          const data = snap.data();
+          setSellerInfo({
+            name: data.name || product.sellerName || '',
+            phone: data.phone || product.phone || '',
+            location: data.location || product.location || ''
+          });
+        } else {
+          setSellerInfo({
+            name: product.sellerName || '',
+            phone: product.phone || '',
+            location: product.location || ''
+          });
+        }
+      } catch (e) {
+        console.error(e);
+        setSellerInfo({
+          name: product.sellerName || '',
+          phone: product.phone || '',
+          location: product.location || ''
+        });
+      }
+    };
+    fetchSeller();
+  }, [product]);
+
+  const displaySellerName = sellerInfo?.name || product.sellerName || 'অজানা বিক্রেতা';
+  const displayLocation = sellerInfo?.location || product.location || '';
+  const displayPhone = sellerInfo?.phone || product.phone || '';
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -187,23 +223,23 @@ function ProductDetailsModal({ product, onClose, onAdd }: { product: Product, on
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-slate-500 font-medium w-16">নাম:</span>
-                  <span className="font-bold text-slate-900 text-base">{product.sellerName || 'অজানা বিক্রেতা'}</span>
+                  <span className="font-bold text-slate-900 text-base">{displaySellerName}</span>
                 </div>
-                {product.location && (
+                {displayLocation && (
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-slate-500 font-medium w-16">লোকেশন:</span>
-                    <span className="font-medium text-slate-800">{product.location}</span>
+                    <span className="font-medium text-slate-800">{displayLocation}</span>
                   </div>
                 )}
-                {product.phone ? (
+                {displayPhone ? (
                   <div className="flex items-center gap-3 mt-2">
                     <div className="bg-sky-500 p-2.5 rounded-full text-white shadow-sm">
                       <Phone className="h-4 w-4" />
                     </div>
                     <div>
                       <p className="text-xs text-sky-600 font-medium mb-0.5">কল করুন (Call Korun)</p>
-                      <a href={`tel:${product.phone}`} className="text-lg font-bold text-sky-700 hover:text-sky-800 transition-colors">
-                        {product.phone}
+                      <a href={`tel:${displayPhone}`} className="text-lg font-bold text-sky-700 hover:text-sky-800 transition-colors">
+                        {displayPhone}
                       </a>
                     </div>
                   </div>
