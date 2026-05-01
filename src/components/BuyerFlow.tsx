@@ -182,27 +182,36 @@ function ProductDetailsModal({ product, onClose, onAdd }: { product: Product, on
             <p className="text-3xl font-bold text-sky-600 mb-6">৳ {product.price.toLocaleString('en-IN')}</p>
             <p className="text-gray-600 mb-6 whitespace-pre-wrap flex-1">{product.description}</p>
             
-            {product.phone && (
-              <div className="mb-6 p-4 bg-sky-50 rounded-lg border border-sky-100">
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-sky-800 font-medium">বিক্রেতা:</span>
-                    <span className="font-bold text-gray-900">{product.sellerName || 'অজানা বিক্রেতা'}</span>
+            <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <h3 className="text-sm font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2">বিক্রেতার তথ্য (Seller Details)</h3>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-500 font-medium w-16">নাম:</span>
+                  <span className="font-bold text-slate-900 text-base">{product.sellerName || 'অজানা বিক্রেতা'}</span>
+                </div>
+                {product.location && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-slate-500 font-medium w-16">লোকেশন:</span>
+                    <span className="font-medium text-slate-800">{product.location}</span>
                   </div>
-                  <div className="flex items-center gap-3">
+                )}
+                {product.phone ? (
+                  <div className="flex items-center gap-3 mt-2">
                     <div className="bg-sky-500 p-2.5 rounded-full text-white shadow-sm">
-                      <Phone className="h-5 w-5" />
+                      <Phone className="h-4 w-4" />
                     </div>
                     <div>
                       <p className="text-xs text-sky-600 font-medium mb-0.5">কল করুন (Call Korun)</p>
-                      <a href={`tel:${product.phone}`} className="text-xl font-bold text-sky-700 hover:text-sky-800 transition-colors">
+                      <a href={`tel:${product.phone}`} className="text-lg font-bold text-sky-700 hover:text-sky-800 transition-colors">
                         {product.phone}
                       </a>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <p className="text-sm text-slate-500 italic mt-1">ফোন নম্বর দেওয়া হয়নি (Phone number not provided)</p>
+                )}
               </div>
-            )}
+            </div>
 
             <div className="mb-6 p-3 bg-amber-50 rounded border border-amber-200 flex gap-3 items-start">
               <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
