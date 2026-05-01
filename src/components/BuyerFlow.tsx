@@ -128,7 +128,7 @@ function ProductCard({ product, onAdd, onClick }: { key?: string | number, produ
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onAdd();
+              onClick();
             }}
             className="inline-flex h-9 px-4 items-center justify-center rounded bg-sky-500 text-white font-medium transition-colors hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm"
           >
@@ -208,16 +208,22 @@ function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { prod
             <p className="text-gray-600 mb-6 whitespace-pre-wrap flex-1">{product.description}</p>
             
             {product.phone && (
-              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="bg-sky-100 p-2 rounded-full text-sky-600">
-                    <Phone className="h-5 w-5" />
+              <div className="mb-6 p-4 bg-sky-50 rounded-lg border border-sky-100">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-sky-800 font-medium">বিক্রেতা:</span>
+                    <span className="font-bold text-gray-900">{product.sellerName || 'অজানা বিক্রেতা'}</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500 font-medium">যোগাযোগ করুন</p>
-                    <a href={`tel:${product.phone}`} className="text-lg font-bold text-gray-900 hover:text-sky-600 transition-colors">
-                      {product.phone}
-                    </a>
+                  <div className="flex items-center gap-3">
+                    <div className="bg-sky-500 p-2.5 rounded-full text-white shadow-sm">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-sky-600 font-medium mb-0.5">কল করুন (Call Korun)</p>
+                      <a href={`tel:${product.phone}`} className="text-xl font-bold text-sky-700 hover:text-sky-800 transition-colors">
+                        {product.phone}
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>

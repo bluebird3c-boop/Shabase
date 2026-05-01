@@ -88,6 +88,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           category: data.category,
           location: data.location,
           phone: data.phone,
+          sellerName: data.sellerName,
           ratingCount: data.ratingCount,
           averageRating: data.averageRating,
         });

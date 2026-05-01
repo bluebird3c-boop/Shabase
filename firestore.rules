@@ -24,7 +24,7 @@ service cloud.firestore {
 
     function isValidProduct(data) {
       return data.keys().hasAll(['title', 'price', 'description', 'imageUrl', 'sellerId', 'createdAt']) &&
-             (data.keys().size() >= 6 && data.keys().size() <= 9) &&
+             (data.keys().size() >= 6 && data.keys().size() <= 10) &&
              data.title is string && data.title.size() > 0 && data.title.size() <= 200 &&
              data.price is number && data.price >= 0 &&
              data.description is string && data.description.size() <= 2000 &&
@@ -32,6 +32,7 @@ service cloud.firestore {
              (data.get('category', null) == null || (data.category is string && data.category.size() <= 100)) &&
              (data.get('location', null) == null || (data.location is string && data.location.size() <= 200)) &&
              (data.get('phone', null) == null || (data.phone is string && data.phone.size() <= 50)) &&
+             (data.get('sellerName', null) == null || (data.sellerName is string && data.sellerName.size() <= 200)) &&
              data.sellerId == request.auth.uid &&
              data.createdAt == request.time;
     }
@@ -44,6 +45,7 @@ service cloud.firestore {
              (data.get('category', null) == null || (data.category is string && data.category.size() <= 100)) &&
              (data.get('location', null) == null || (data.location is string && data.location.size() <= 200)) &&
              (data.get('phone', null) == null || (data.phone is string && data.phone.size() <= 50)) &&
+             (data.get('sellerName', null) == null || (data.sellerName is string && data.sellerName.size() <= 200)) &&
              data.sellerId == existing().sellerId; // Must not change sellerId
     }
 
@@ -84,7 +86,7 @@ service cloud.firestore {
                     (
                       (existing().sellerId == request.auth.uid &&
                        isValidProductUpdate(incoming()) &&
-                       incoming().diff(existing()).affectedKeys().hasOnly(['title', 'price', 'description', 'imageUrl', 'category', 'location', 'phone', 'ratingCount', 'averageRating'])) ||
+                       incoming().diff(existing()).affectedKeys().hasOnly(['title', 'price', 'description', 'imageUrl', 'category', 'location', 'phone', 'sellerName', 'ratingCount', 'averageRating'])) ||
                       (incoming().diff(existing()).affectedKeys().hasOnly(['ratingCount', 'averageRating']))
                     );
 

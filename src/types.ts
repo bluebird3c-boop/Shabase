@@ -48,6 +48,7 @@ export interface Product {
   category?: string;
   location?: string;
   phone?: string;
+  sellerName?: string;
   ratingCount?: number;
   averageRating?: number;
 }

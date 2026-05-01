@@ -124,7 +124,8 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
       imageUrl: img || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800',
       category,
       location: user?.location || '',
-      phone: user?.phone || ''
+      phone: user?.phone || '',
+      sellerName: user?.name || ''
     });
     setTitle('');
     setPrice('');
