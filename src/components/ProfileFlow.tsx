@@ -3,9 +3,23 @@ import { User as UserIcon, Save } from 'lucide-react';
 import { useStore } from '../Store';
 
 export function ProfileFlow() {
-  const { user } = useStore();
+  const { user, updateProfile } = useStore();
   const [profileImg, setProfileImg] = useState<string>('');
   const [name, setName] = useState(user?.name || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [location, setLocation] = useState(user?.location || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!name || !phone || !location) {
+        alert('অনুগ্রহ করে নাম, ফোন এবং লোকেশন প্রদান করুন। (Please provide name, phone and location)');
+        return;
+    }
+    setIsSaving(true);
+    await updateProfile({ name, phone, location });
+    setIsSaving(false);
+    alert('প্রোফাইল আপডেট হয়েছে (Profile updated)');
+  };
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10 md:py-16">
@@ -38,12 +52,22 @@ export function ProfileFlow() {
 
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium leading-6 text-gray-900">আপনার নাম (Your Name)</label>
-            <input type="text" value={name} onChange={e => setName(e.target.value)} className="mt-2 block w-full rounded border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6" />
+            <label className="block text-sm font-medium leading-6 text-gray-900">আপনার নাম (Your Name) *</label>
+            <input required type="text" value={name} onChange={e => setName(e.target.value)} className="mt-2 block w-full rounded border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium leading-6 text-gray-900">ফোন নম্বর (Phone Number) *</label>
+            <input required type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="017XXXXXXX" className="mt-2 block w-full rounded border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium leading-6 text-gray-900">লোকেশন (Location) *</label>
+            <input required type="text" value={location} onChange={e => setLocation(e.target.value)} placeholder="যেমন: ধানমন্ডি, ঢাকা" className="mt-2 block w-full rounded border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white" />
           </div>
           
-          <button className="rounded bg-sky-500 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-sky-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 flex items-center gap-2">
-            <Save className="h-4 w-4" /> সেইভ করুন
+          <button disabled={isSaving} onClick={handleSave} className="rounded bg-sky-500 px-6 py-3 text-sm font-bold text-white shadow-sm hover:bg-sky-600 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 flex items-center gap-2 disabled:opacity-50 mt-4">
+            <Save className="h-4 w-4" /> {isSaving ? 'সেইভ হচ্ছে...' : 'সেইভ করুন'}
           </button>
         </div>
       </div>

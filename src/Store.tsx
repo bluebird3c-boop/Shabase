@@ -25,6 +25,7 @@ interface StoreContextValue {
   releasePaymentBuyer: (order: Order) => Promise<void>;
   refundOrderSeller: (order: Order) => Promise<void>;
   submitReview: (productId: string, rating: number, comment: string) => Promise<void>;
+  updateProfile: (profile: { name: string; phone: string; location: string }) => Promise<void>;
   showLoginModal: boolean;
   setShowLoginModal: (v: boolean) => void;
 }
@@ -72,13 +73,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, [user?.id]);
 
   useEffect(() => {
-    if (!user) {
-      setProducts([]);
-      setOrders([]);
-      setTransactions([]);
-      return;
-    }
-
     const q = query(collection(db, 'products'));
     const unsubscribeProducts = onSnapshot(q, (snapshot) => {
       const prods: Product[] = [];
@@ -91,10 +85,25 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           description: data.description,
           imageUrl: data.imageUrl,
           sellerId: data.sellerId,
+          category: data.category,
+          location: data.location,
+          phone: data.phone,
+          ratingCount: data.ratingCount,
+          averageRating: data.averageRating,
         });
       });
       setProducts(prods.reverse());
     }, (error) => handleFirestoreError(error, OperationType.LIST, 'products'));
+
+    return () => unsubscribeProducts();
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setOrders([]);
+      setTransactions([]);
+      return;
+    }
 
     const oq = query(collection(db, 'orders')); // Client side filter for simplicity
     const unsubscribeOrders = onSnapshot(oq, (snapshot) => {
@@ -116,7 +125,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => {
-      unsubscribeProducts();
       unsubscribeOrders();
       unsubscribeTx();
     };
@@ -289,12 +297,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfile = async (profile: { name: string; phone: string; location: string }) => {
+    if (!user) return;
+    await updateDoc(doc(db, 'users', user.id), {
+      name: profile.name,
+      phone: profile.phone,
+      location: profile.location
+    });
+    setUser(prev => prev ? { ...prev, ...profile } : null);
+  };
+
   return (
     <StoreContext.Provider value={{
       user, logout,
       showLoginModal, setShowLoginModal,
       tab, setTab,
-      orders, transactions, addMoney, checkoutCart, releasePaymentBuyer, refundOrderSeller, submitReview,
+      orders, transactions, addMoney, checkoutCart, releasePaymentBuyer, refundOrderSeller, submitReview, updateProfile,
       products, addProduct, removeProduct,
       cart, addToCart, removeFromCart, updateQuantity, clearCart,
       isLoading: isLoadingAuth

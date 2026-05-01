@@ -128,9 +128,11 @@ function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { prod
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const q = query(collection(db, 'reviews'), where('productId', '==', product.id), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'reviews'), where('productId', '==', product.id));
     const unsub = onSnapshot(q, (snapshot) => {
-      setReviews(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Review)));
+      const fetchedReviews = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Review));
+      fetchedReviews.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+      setReviews(fetchedReviews);
     });
     return () => unsub();
   }, [product.id]);

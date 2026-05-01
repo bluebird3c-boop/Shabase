@@ -3,6 +3,8 @@ export type Tab = 'home' | 'buy' | 'sell' | 'wallet' | 'profile' | 'about';
 export interface User {
   id: string;
   name: string;
+  phone?: string;
+  location?: string;
   walletBalance: number;
 }
 
