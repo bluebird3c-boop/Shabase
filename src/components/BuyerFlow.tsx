@@ -7,7 +7,7 @@ import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestor
 import { db } from '../firebase';
 
 export function BuyerFlow() {
-  const { products, addToCart, submitReview } = useStore();
+  const { products, addToCart, submitReview, user, setShowLoginModal } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -64,7 +64,18 @@ export function BuyerFlow() {
         ) : (
           <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-8">
             {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} onAdd={() => addToCart(product)} onClick={() => setSelectedProduct(product)} />
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onAdd={() => {
+                  if (!user) {
+                    setShowLoginModal(true);
+                    return;
+                  }
+                  addToCart(product);
+                }} 
+                onClick={() => setSelectedProduct(product)} 
+              />
             ))}
           </div>
         )}
@@ -114,6 +125,15 @@ function ProductCard({ product, onAdd, onClick }: { key?: string | number, produ
         <p className="text-sm text-gray-500 line-clamp-2 flex-1">{product.description}</p>
         <div className="flex items-center justify-between pt-4">
           <p className="text-lg font-bold text-gray-900">৳ {product.price.toLocaleString('en-IN')}</p>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onAdd();
+            }}
+            className="inline-flex h-9 px-4 items-center justify-center rounded bg-sky-500 text-white font-medium transition-colors hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 text-sm"
+          >
+            কিনুন (Buy)
+          </button>
         </div>
       </div>
     </motion.div>
