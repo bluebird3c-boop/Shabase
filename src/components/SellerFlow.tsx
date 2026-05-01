@@ -40,7 +40,7 @@ export function SellerFlow() {
           </div>
           <button
             onClick={() => setIsAdding(!isAdding)}
-            className="inline-flex items-center justify-center gap-2 rounded bg-amber-400 px-5 py-2.5 text-sm font-bold text-sky-900 shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded bg-sky-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-colors"
           >
             {isAdding ? 'বাতিল করুন' : <><Plus className="h-5 w-5" /> বিজ্ঞাপন দিন</>}
           </button>
