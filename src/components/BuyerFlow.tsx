@@ -7,7 +7,7 @@ import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestor
 import { db } from '../firebase';
 
 export function BuyerFlow() {
-  const { products, addToCart, submitReview, user, setShowLoginModal } = useStore();
+  const { products, addToCart, user, setShowLoginModal } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -87,10 +87,13 @@ export function BuyerFlow() {
             product={selectedProduct}
             onClose={() => setSelectedProduct(null)}
             onAdd={() => {
+              if (!user) {
+                setShowLoginModal(true);
+                return;
+              }
               addToCart(selectedProduct);
               setSelectedProduct(null);
             }}
-            onSubmitReview={(rating, comment) => submitReview(selectedProduct.id, rating, comment)}
           />
         )}
       </AnimatePresence>
@@ -140,36 +143,8 @@ function ProductCard({ product, onAdd, onClick }: { key?: string | number, produ
   );
 }
 
-function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { product: Product, onClose: () => void, onAdd: () => void, onSubmitReview: (r: number, c: string) => Promise<void> }) {
+function ProductDetailsModal({ product, onClose, onAdd }: { product: Product, onClose: () => void, onAdd: () => void }) {
   const { user, setShowLoginModal } = useStore();
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const q = query(collection(db, 'reviews'), where('productId', '==', product.id));
-    const unsub = onSnapshot(q, (snapshot) => {
-      const fetchedReviews = snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Review));
-      fetchedReviews.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-      setReviews(fetchedReviews);
-    });
-    return () => unsub();
-  }, [product.id]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) {
-      setShowLoginModal(true);
-      return;
-    }
-    if (!comment.trim()) return;
-    setIsSubmitting(true);
-    await onSubmitReview(rating, comment);
-    setComment('');
-    setRating(5);
-    setIsSubmitting(false);
-  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -232,10 +207,9 @@ function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { prod
             <div className="mb-6 p-3 bg-amber-50 rounded border border-amber-200 flex gap-3 items-start">
               <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-amber-800">
-                <span className="font-bold">সতর্কবার্তা:</span> পণ্য হাতে পাওয়ার আগে কাউকে অগ্রিম টাকা দেবেন না! 
+                <span className="font-bold">সতর্কবার্তা:</span> পণ্য হাতে পাওয়ার আগে কাউকে অগ্রিম টাকা দেবেন না!
               </p>
             </div>
-            
             <button onClick={() => {
               if (!user) {
                 setShowLoginModal(true);
@@ -245,64 +219,6 @@ function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { prod
             }} className="w-full bg-sky-500 text-white font-bold py-3 px-4 rounded hover:bg-sky-600 transition-colors flex items-center justify-center gap-2 mt-auto">
               <Plus className="h-5 w-5" /> Add to Cart
             </button>
-          </div>
-        </div>
-
-        <div className="p-6 md:p-8 bg-gray-50 border-t border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Reviews</h3>
-          
-          <form onSubmit={handleSubmit} className="mb-8 bg-white p-4 sm:p-6 rounded border border-gray-200">
-            <h4 className="text-sm font-bold text-gray-900 mb-4">Write a Review</h4>
-            <div className="flex gap-1 mb-4">
-              {[1, 2, 3, 4, 5].map(star => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  className="focus:outline-none"
-                >
-                  <Star className={`h-6 w-6 ${star <= rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
-                </button>
-              ))}
-            </div>
-            <textarea
-              required
-              rows={3}
-              value={comment}
-              onChange={e => setComment(e.target.value)}
-              placeholder="Tell others what you think about this product..."
-              className="block w-full rounded border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 mb-4"
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-gray-900 text-white font-bold py-2 px-6 rounded text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Review'}
-            </button>
-          </form>
-
-          <div className="space-y-6">
-            {reviews.length === 0 ? (
-              <p className="text-gray-500 text-sm">No reviews yet. Be the first to review this product!</p>
-            ) : (
-              reviews.map(review => (
-                <div key={review.id} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-gray-900">{review.userName || 'Anonymous'}</span>
-                    <span className="text-xs text-gray-500">
-                      {review.createdAt ? new Date(review.createdAt.toMillis()).toLocaleDateString() : 'Just now'}
-                    </span>
-                  </div>
-                  <div className="flex gap-1 mb-2">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 text-sm">{review.comment}</p>
-                </div>
-              ))
-            )}
           </div>
         </div>
       </motion.div>
