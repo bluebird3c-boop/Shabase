@@ -216,7 +216,7 @@ function ProductDetailsModal({ product, onClose, onAdd }: { product: Product, on
               </span>
             </div>
             <p className="text-3xl font-bold text-sky-600 mb-6">৳ {product.price.toLocaleString('en-IN')}</p>
-            <p className="text-gray-600 mb-6 whitespace-pre-wrap flex-1">{product.description}</p>
+            <p className="text-gray-600 mb-6 whitespace-pre-wrap">{product.description}</p>
             
             <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
               <h3 className="text-sm font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2">বিক্রেতার তথ্য (Seller Details)</h3>
