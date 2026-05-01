@@ -194,74 +194,75 @@ function ProductDetailsModal({ product, onClose, onAdd }: { product: Product, on
           <div className="bg-gray-100 aspect-square md:aspect-auto">
             <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover" />
           </div>
-          <div className="p-6 md:p-8 flex flex-col">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.title}</h2>
+          <div className="p-4 md:p-6 flex flex-col h-full overflow-y-auto">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">{product.title}</h2>
             
             {(product.location || product.category) && (
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                {product.category && <span className="inline-flex items-center rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-sky-800">{product.category}</span>}
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                {product.category && <span className="inline-flex items-center rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800">{product.category}</span>}
                 {product.location && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">
                     <MapPin className="h-3 w-3" /> {product.location}
                   </span>
                 )}
               </div>
             )}
 
-            <div className="flex items-center gap-2 mb-4">
-              <Star className={`h-5 w-5 ${product.averageRating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
-              <span className="text-sm font-medium text-gray-700">
+            <div className="flex items-center gap-2 mb-3">
+              <Star className={`h-4 w-4 ${product.averageRating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
+              <span className="text-xs font-medium text-gray-700">
                 {product.averageRating ? `${product.averageRating.toFixed(1)} rating` : 'No ratings yet'} 
                 {product.ratingCount ? ` (${product.ratingCount} reviews)` : ''}
               </span>
             </div>
-            <p className="text-3xl font-bold text-sky-600 mb-6">৳ {product.price.toLocaleString('en-IN')}</p>
-            <p className="text-gray-600 mb-6 whitespace-pre-wrap">{product.description}</p>
+            <p className="text-2xl font-bold text-sky-600 mb-3">৳ {product.price.toLocaleString('en-IN')}</p>
+            <p className="text-sm text-gray-600 mb-4 whitespace-pre-wrap">{product.description}</p>
             
-            <div className="mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <h3 className="text-sm font-bold text-slate-900 mb-3 border-b border-slate-200 pb-2">বিক্রেতার তথ্য (Seller Details)</h3>
-              <div className="flex flex-col gap-3">
+            <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <h3 className="text-xs font-bold text-slate-900 mb-2 border-b border-slate-200 pb-1.5">বিক্রেতার তথ্য (Seller)</h3>
+              <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-slate-500 font-medium w-16">নাম:</span>
-                  <span className="font-bold text-slate-900 text-base">{displaySellerName}</span>
+                  <span className="text-slate-500 font-medium w-14">নাম:</span>
+                  <span className="font-bold text-slate-900">{displaySellerName}</span>
                 </div>
                 {displayLocation && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-slate-500 font-medium w-16">লোকেশন:</span>
+                    <span className="text-slate-500 font-medium w-14">লোকেশন:</span>
                     <span className="font-medium text-slate-800">{displayLocation}</span>
                   </div>
                 )}
                 {displayPhone ? (
-                  <div className="flex items-center gap-3 mt-2">
-                    <div className="bg-sky-500 p-2.5 rounded-full text-white shadow-sm">
-                      <Phone className="h-4 w-4" />
+                  <div className="flex items-center gap-3 mt-1">
+                    <div className="bg-sky-500 p-2 rounded-full text-white shadow-sm">
+                      <Phone className="h-3.5 w-3.5" />
                     </div>
                     <div>
-                      <p className="text-xs text-sky-600 font-medium mb-0.5">কল করুন (Call Korun)</p>
-                      <a href={`tel:${displayPhone}`} className="text-lg font-bold text-sky-700 hover:text-sky-800 transition-colors">
+                      <p className="text-[10px] text-sky-600 font-medium leading-tight">কল করুন</p>
+                      <a href={`tel:${displayPhone}`} className="text-base font-bold text-sky-700 hover:text-sky-800 transition-colors leading-tight">
                         {displayPhone}
                       </a>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500 italic mt-1">ফোন নম্বর দেওয়া হয়নি (Phone number not provided)</p>
+                  <p className="text-xs text-slate-500 italic mt-1">ফোন নম্বর দেওয়া হয়নি</p>
                 )}
               </div>
             </div>
 
-            <div className="mb-6 p-3 bg-amber-50 rounded border border-amber-200 flex gap-3 items-start">
-              <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-800">
-                <span className="font-bold">সতর্কবার্তা:</span> পণ্য হাতে পাওয়ার আগে কাউকে অগ্রিম টাকা দেবেন না!
+            <div className="mb-4 p-2.5 bg-amber-50 rounded border border-amber-200 flex gap-2 items-start">
+              <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-800 leading-tight">
+                <span className="font-bold">সতর্কবার্তা:</span> পণ্য হাতে পাওয়ার আগে অগ্রিম টাকা দেবেন না!
               </p>
             </div>
+            
             <button onClick={() => {
               if (!user) {
                 setShowLoginModal(true);
                 return;
               }
               onAdd();
-            }} className="w-full bg-sky-500 text-white font-bold py-3 px-4 rounded hover:bg-sky-600 transition-colors flex items-center justify-center gap-2 mt-auto">
+            }} className="mt-auto w-full bg-sky-500 text-white font-bold py-2.5 px-4 rounded hover:bg-sky-600 transition-colors flex items-center justify-center gap-2">
               <Plus className="h-5 w-5" /> Add to Cart
             </button>
           </div>
