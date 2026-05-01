@@ -22,36 +22,38 @@ export function BuyerFlow() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-4">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">সকল বিজ্ঞাপন</h1>
-            <p className="text-gray-500 mt-1">আপনার প্রয়োজনীয় সব কিছু খুঁজুন</p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="block w-full sm:w-auto rounded border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white"
-            >
-              <option value="All">সব ক্যাটাগরি (All)</option>
-              <option value="Electronics">ইলেকট্রনিক্স</option>
-              <option value="Fashion">ফ্যাশন</option>
-              <option value="Home">হোম ও লিভিং</option>
-              <option value="Vehicles">গাড়ি</option>
-              <option value="Properties">প্রপার্টি</option>
-              <option value="Others">অন্যান্য</option>
-            </select>
-            <div className="relative flex-1 w-full">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Search className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="কী খুঁজছেন?"
-                className="block w-full rounded border-0 py-3 pl-10 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900">সকল বিজ্ঞাপন</h1>
+              <p className="text-gray-500 mt-1">আপনার প্রয়োজনীয় সব কিছু খুঁজুন</p>
             </div>
+            <div className="w-full sm:w-auto shrink-0">
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className="block w-full sm:w-48 rounded border-0 py-3 px-4 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 bg-white shrink-0"
+              >
+                <option value="All">সব ক্যাটাগরি (All)</option>
+                <option value="Electronics">ইলেকট্রনিক্স</option>
+                <option value="Fashion">ফ্যাশন</option>
+                <option value="Home">হোম ও লিভিং</option>
+                <option value="Vehicles">গাড়ি</option>
+                <option value="Properties">প্রপার্টি</option>
+                <option value="Others">অন্যান্য</option>
+              </select>
+            </div>
+          </div>
+          <div className="relative w-full">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="কী খুঁজছেন? প্রোডাক্টের নাম অথবা বিবরণ দিয়ে খুঁজুন..."
+              className="block w-full rounded-lg border-0 py-4 pl-12 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 text-base sm:leading-6 bg-white shadow-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 
