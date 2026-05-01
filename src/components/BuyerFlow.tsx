@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Plus, Star, X } from 'lucide-react';
+import { Search, Plus, Star, X, MapPin, Phone, AlertTriangle } from 'lucide-react';
 import { useStore } from '../Store';
 import { Product, Review } from '../types';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
@@ -114,16 +114,6 @@ function ProductCard({ product, onAdd, onClick }: { key?: string | number, produ
         <p className="text-sm text-gray-500 line-clamp-2 flex-1">{product.description}</p>
         <div className="flex items-center justify-between pt-4">
           <p className="text-lg font-bold text-gray-900">৳ {product.price.toLocaleString('en-IN')}</p>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAdd();
-            }}
-            className="inline-flex h-9 w-9 items-center justify-center rounded bg-gray-100 text-sky-500 transition-colors hover:bg-sky-500 hover:text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2"
-            aria-label="Add to cart"
-          >
-            <Plus className="h-5 w-5" />
-          </button>
         </div>
       </div>
     </motion.div>
@@ -173,6 +163,18 @@ function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { prod
           </div>
           <div className="p-6 md:p-8 flex flex-col">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">{product.title}</h2>
+            
+            {(product.location || product.category) && (
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                {product.category && <span className="inline-flex items-center rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-sky-800">{product.category}</span>}
+                {product.location && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                    <MapPin className="h-3 w-3" /> {product.location}
+                  </span>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center gap-2 mb-4">
               <Star className={`h-5 w-5 ${product.averageRating ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
               <span className="text-sm font-medium text-gray-700">
@@ -181,9 +183,38 @@ function ProductDetailsModal({ product, onClose, onAdd, onSubmitReview }: { prod
               </span>
             </div>
             <p className="text-3xl font-bold text-sky-600 mb-6">৳ {product.price.toLocaleString('en-IN')}</p>
-            <p className="text-gray-600 mb-8 whitespace-pre-wrap flex-1">{product.description}</p>
+            <p className="text-gray-600 mb-6 whitespace-pre-wrap flex-1">{product.description}</p>
             
-            <button onClick={onAdd} className="w-full bg-sky-500 text-white font-bold py-3 px-4 rounded hover:bg-sky-600 transition-colors flex items-center justify-center gap-2">
+            {product.phone && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="bg-sky-100 p-2 rounded-full text-sky-600">
+                    <Phone className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 font-medium">যোগাযোগ করুন</p>
+                    <a href={`tel:${product.phone}`} className="text-lg font-bold text-gray-900 hover:text-sky-600 transition-colors">
+                      {product.phone}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="mb-6 p-3 bg-amber-50 rounded border border-amber-200 flex gap-3 items-start">
+              <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-amber-800">
+                <span className="font-bold">সতর্কবার্তা:</span> পণ্য হাতে পাওয়ার আগে কাউকে অগ্রিম টাকা দেবেন না! 
+              </p>
+            </div>
+            
+            <button onClick={() => {
+              if (!user) {
+                setShowLoginModal(true);
+                return;
+              }
+              onAdd();
+            }} className="w-full bg-sky-500 text-white font-bold py-3 px-4 rounded hover:bg-sky-600 transition-colors flex items-center justify-center gap-2 mt-auto">
               <Plus className="h-5 w-5" /> Add to Cart
             </button>
           </div>

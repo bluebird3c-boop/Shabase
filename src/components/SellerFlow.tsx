@@ -61,6 +61,7 @@ export function SellerFlow() {
                       <p className="truncate text-base font-semibold text-gray-900">{product.title}</p>
                       <div className="flex items-center gap-2 mt-1">
                         {product.category && <span className="inline-flex items-center rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800">{product.category}</span>}
+                        {product.location && <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800">{product.location}</span>}
                         <p className="truncate text-sm text-gray-500">{product.description}</p>
                       </div>
                       <p className="text-sm font-bold text-sky-600 mt-2">৳ {product.price.toLocaleString('en-IN')}</p>
@@ -91,6 +92,8 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
   const [desc, setDesc] = useState('');
   const [img, setImg] = useState('');
   const [category, setCategory] = useState('Others');
+  const [location, setLocation] = useState('');
+  const [phone, setPhone] = useState('');
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -99,13 +102,17 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
       price: parseFloat(price) || 0,
       description: desc,
       imageUrl: img || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800',
-      category
+      category,
+      location,
+      phone
     });
     setTitle('');
     setPrice('');
     setDesc('');
     setImg('');
     setCategory('Others');
+    setLocation('');
+    setPhone('');
     onClose();
   };
 
@@ -140,6 +147,20 @@ function AddProductForm({ onClose, onAdd }: { onClose: () => void, onAdd: (p: Om
               <option value="Vehicles">গাড়ি (Vehicles)</option>
               <option value="Properties">প্রপার্টি (Properties)</option>
             </select>
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="location" className="block text-sm font-medium leading-6 text-gray-900">আপনার লোকেশন (Location)</label>
+          <div className="mt-2">
+            <input required type="text" id="location" value={location} onChange={e => setLocation(e.target.value)} className="block w-full rounded border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="যেমন: ধানমন্ডি, ঢাকা" />
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium leading-6 text-gray-900">ফোন নম্বর (Phone Number)</label>
+          <div className="mt-2">
+            <input required type="text" id="phone" value={phone} onChange={e => setPhone(e.target.value)} className="block w-full rounded border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-sky-500 sm:text-sm sm:leading-6 px-4 bg-white" placeholder="017XXXXXXX" />
           </div>
         </div>
 

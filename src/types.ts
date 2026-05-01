@@ -44,6 +44,8 @@ export interface Product {
   imageUrl: string;
   sellerId: string;
   category?: string;
+  location?: string;
+  phone?: string;
   ratingCount?: number;
   averageRating?: number;
 }
